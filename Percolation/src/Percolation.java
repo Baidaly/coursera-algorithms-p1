@@ -2,7 +2,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
     private final int n;
-    private final WeightedQuickUnionUF quickFindUF;
+    private final WeightedQuickUnionUF quickFindUFA;
+    private final WeightedQuickUnionUF quickFindUFB;
     private int numberSitesOpen = 0;
     private final byte[][] moves = new byte[][]{
             {-1, 0},
@@ -19,7 +20,8 @@ public class Percolation {
             throw new IllegalArgumentException("n should be > 0");
         }
         this.n = n;
-        this.quickFindUF = new WeightedQuickUnionUF(n * n + 1);
+        this.quickFindUFA = new WeightedQuickUnionUF(n * n + 1);
+        this.quickFindUFB = new WeightedQuickUnionUF(n * n + 2);
         this.openSites = new boolean[n][n];
     }
 
@@ -49,12 +51,18 @@ public class Percolation {
             moveCol = col + move[1];
 
             if (moveRow > 0 && moveCol > 0 && moveRow <= n && moveCol <= n && openSites[moveRow - 1][moveCol - 1]) {
-                quickFindUF.union(mapPosition(row, col), mapPosition(moveRow, moveCol));
+                quickFindUFA.union(mapPosition(row, col), mapPosition(moveRow, moveCol));
+                quickFindUFB.union(mapPosition(row, col), mapPosition(moveRow, moveCol));
             }
         }
 
         if (row == 1) {
-            this.quickFindUF.union(0, mapPosition(row, col));
+            this.quickFindUFA.union(0, mapPosition(row, col));
+            this.quickFindUFB.union(0, mapPosition(row, col));
+        }
+
+        if (row == n) {
+            this.quickFindUFB.union(n * n + 1, mapPosition(row, col));
         }
     }
 
@@ -83,7 +91,7 @@ public class Percolation {
             throw new IllegalArgumentException("col should be > 0 and < n + 1");
         }
 
-        return this.quickFindUF.connected(0, mapPosition(row, col));
+        return this.quickFindUFA.connected(0, mapPosition(row, col));
     }
 
     // number of open sites
@@ -93,13 +101,15 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        for (int i = 0; i < n; i++) {
-            if (openSites[n - 1][i] && this.quickFindUF.connected(0, mapPosition(n, i + 1))) {
-                return true;
-            }
-        }
+//        for (int i = 0; i < n; i++) {
+//            if (openSites[n - 1][i] && this.quickFindUF.connected(0, mapPosition(n, i + 1))) {
+//                return true;
+//            }
+//        }
+//
+//        return false;
 
-        return false;
+        return this.quickFindUFB.connected(0, n * n + 1);
     }
 
     // test client (optional)
