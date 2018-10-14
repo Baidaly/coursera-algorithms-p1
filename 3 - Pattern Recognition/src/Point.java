@@ -52,6 +52,10 @@ public class Point implements Comparable<Point> {
      * Unit tests the Point data type.
      */
     public static void main(String[] args) {
-        /* YOUR CODE HERE */
+        Point p1 = new Point(0, 0);
+
+        Point p2 = new Point(0, 5);
+
+        int v = p1.compareTo(p2);
     }
 }
